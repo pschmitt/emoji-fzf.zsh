@@ -3,7 +3,7 @@ typeset -agr EMOJI_FZF_FZF_DEFAULT_ARGS=(--header "Emoji selection" --no-hscroll
 # Path to the emoji-fzf executable
 typeset -g EMOJI_FZF_BIN_PATH="${EMOJI_FZF_BIN_PATH:-"emoji-fzf"}"
 # Bind to Ctrl-K by default. Unset to disable.
-typeset -g EMOJI_FZF_BINDKEY="${EMOJI_FZF_BINDKEY:-"^k"}"
+typeset -g EMOJI_FZF_BINDKEY="${EMOJI_FZF_BINDKEY-"^k"}"
 # Fuzzy matching tool to use for the emoji selection
 typeset -g EMOJI_FZF_FUZZY_FINDER="${EMOJI_FZF_FUZZY_FINDER:-"fzf"}"
 # Optional arguments to pass to the fuzzy finder tool

@@ -144,7 +144,7 @@ __emoji_fzf_alias_emojicopy() {
     return 3
   fi
 
-  __emoji-fzf-preview "$@" | "$clipboard_cmd[@]"
+  __emoji-fzf-preview "$@" | tr -d '\n' | "$clipboard_cmd[@]"
 }
 
 # Setup ZLE

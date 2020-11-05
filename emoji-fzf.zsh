@@ -118,7 +118,7 @@ emoji-fzf-zle() {
   zle reset-prompt
 }
 
-__emoji_fzf_alias_emojicopy() {
+__emoji_fzf_clipboard_cmd() {
   local -a clipboard_cmd
 
   if [[ -n "$EMOJI_FZF_CLIPBOARD" ]]
@@ -144,7 +144,40 @@ __emoji_fzf_alias_emojicopy() {
     return 3
   fi
 
+  echo "$clipboard_cmd[@]"
+}
+
+__emoji_fzf_alias_emojicopy() {
+  local clipboard_cmd=($(__emoji_fzf_clipboard_cmd))
   __emoji-fzf-preview "$@" | tr -d '\n' | "$clipboard_cmd[@]"
+}
+
+__emoji_fzf_alias_emojilucky() {
+  local usage="Usage: $0 SEARCH_TERM"
+
+  if [[ -z "$*" ]]
+  then
+    echo "$usage" >&2
+    return 2
+  fi
+
+  case "$1" in
+    --help|-h)
+      echo "$usage"
+      return
+      ;;
+  esac
+
+  local e
+  e=$(emoji-fzf preview --prepend | \
+      fzf --filter "$*" | awk '{ print $1; exit }')
+
+  local clipboard_cmd=($(__emoji_fzf_clipboard_cmd))
+  if [[ -n "$e" ]]
+  then
+    echo "Putting $e into your X selection" >&2
+    echo -n "$e" | "$clipboard_cmd[@]"
+  fi
 }
 
 # Setup ZLE
@@ -159,6 +192,7 @@ if [[ -z "$EMOJI_FZF_NO_ALIAS" ]]
 then
   alias emoji=__emoji-fzf-preview
   alias emojicopy=__emoji_fzf_alias_emojicopy
+  alias emojilucky=__emoji_fzf_alias_emojilucky
 fi
 
 # vim: set ft=zsh et ts=2 sw=2 :

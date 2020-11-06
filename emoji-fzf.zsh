@@ -31,6 +31,10 @@ then
 fi
 
 __emoji-fzf-preview() {
+  setopt localoptions
+  setopt errreturn
+  setopt pipefail
+
   local -a efzf_args
   local -a fz_args=("$EMOJI_FZF_FUZZY_FINDER_ARGS[@]")
   local -a fz_cmd
@@ -148,6 +152,10 @@ __emoji_fzf_clipboard_cmd() {
 }
 
 __emoji_fzf_alias_emojicopy() {
+  setopt localoptions
+  setopt errreturn
+  setopt pipefail
+
   local clipboard_cmd=($(__emoji_fzf_clipboard_cmd))
   __emoji-fzf-preview "$@" | tr -d '\n' | "$clipboard_cmd[@]"
 }

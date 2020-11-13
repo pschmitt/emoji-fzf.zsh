@@ -123,7 +123,8 @@ __emoji_fzf_alias_emojicopy() {
 
   if [[ -n "$EMOJI_FZF_CLIPBOARD" ]]
   then
-    clipboard_cmd=("$EMOJI_FZF_CLIPBOARD[@]")
+    # Split EMOJI_FZF_CLIPBOARD
+    clipboard_cmd=(${=EMOJI_FZF_CLIPBOARD})
   else
     # Try to guess the clipboard manager
     if (( $+commands[xsel] ))

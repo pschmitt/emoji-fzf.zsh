@@ -64,6 +64,11 @@ __emoji-fzf-preview() {
     if [[ -z "$fz_args" ]]
     then
       fz_args+=("$EMOJI_FZF_FZF_DEFAULT_ARGS[@]")
+      # Update default header when not all emojis are shown
+      if [[ -n "$EMOJI_FZF_SKIP_MULTICHAR" ]]
+      then
+        fz_args[2]="$fz_args[2] [*single char emoji only*]"
+      fi
     fi
 
     # Set start query

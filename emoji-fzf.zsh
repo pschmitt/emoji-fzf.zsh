@@ -17,6 +17,9 @@ fi
 typeset -g EMOJI_FZF_CUSTOM_ALIASES="${EMOJI_FZF_CUSTOM_ALIASES}"
 # Set to non-empty value to prepend the emoji before the emoji aliases
 typeset -g EMOJI_FZF_PREPEND_EMOJIS="${EMOJI_FZF_PREPEND_EMOJIS}"
+# Set to non-empty value to ignore all multichar emojis (eg: 🇩🇪)
+# Requires EMOJI_FZF_PREPEND_EMOJIS=1
+typeset -g EMOJI_FZF_SKIP_MULTICHAR="${EMOJI_FZF_SKIP_MULTICHAR}"
 # Set to non-empty value to skip the creation of shell aliases
 typeset -g EMOJI_FZF_NO_ALIAS="${EMOJI_FZF_NO_ALIAS}"
 # Set clipboard management tool
@@ -74,9 +77,17 @@ __emoji-fzf-preview() {
   then
     efzf_args+=(--prepend)
 
-    "$EMOJI_FZF_BIN_PATH" "$efzf_args[@]" | \
-      "$fz_cmd[@]" $fz_args | \
-      awk '{ print $1 }'
+    if [[ -n "$EMOJI_FZF_SKIP_MULTICHAR" ]]
+    then
+      "$EMOJI_FZF_BIN_PATH" "$efzf_args[@]" | \
+        awk 'length($1)<2' | \
+        "$fz_cmd[@]" $fz_args | \
+        awk '{ print $1 }'
+    else
+      "$EMOJI_FZF_BIN_PATH" "$efzf_args[@]" | \
+        $filter[@] "$fz_cmd[@]" $fz_args | \
+        awk '{ print $1 }'
+    fi
   else
     "$EMOJI_FZF_BIN_PATH" "$efzf_args[@]" | \
       "$fz_cmd[@]" $fz_args \

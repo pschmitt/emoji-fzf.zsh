@@ -90,7 +90,7 @@ __emoji-fzf-preview() {
         awk '{ print $1 }'
     else
       "$EMOJI_FZF_BIN_PATH" "$efzf_args[@]" | \
-        $filter[@] "$fz_cmd[@]" $fz_args | \
+        "$fz_cmd[@]" $fz_args | \
         awk '{ print $1 }'
     fi
   else

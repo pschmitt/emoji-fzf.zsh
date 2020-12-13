@@ -133,7 +133,7 @@ emoji-fzf-zle() {
     if [[ "$_LBUFFER" =~ [a-zA-Z0-9+_-]$ ]]
     then
       local comp
-      comp="$(grep -E -o ":?[a-zA-Z0-9+_-]+" <<< "$_LBUFFER")"
+      comp="$(grep -E -o ":?[a-zA-Z0-9+_-]+" <<< "$_LBUFFER" | tail -1)"
       emoji="$(__emoji-fzf-preview "${(L)comp#:}")"
       _BUFFER="${LBUFFER%$comp}${emoji:-$comp}"
     else

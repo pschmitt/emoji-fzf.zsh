@@ -1,5 +1,5 @@
 # Settings
-typeset -agr EMOJI_FZF_FZF_DEFAULT_ARGS=(--header "Emoji selection" --no-hscroll)
+typeset -ag EMOJI_FZF_FZF_DEFAULT_ARGS=(--header "Emoji selection" --no-hscroll)
 # Path to the emoji-fzf executable
 typeset -g EMOJI_FZF_BIN_PATH="${EMOJI_FZF_BIN_PATH:-"emoji-fzf"}"
 # Bind to Ctrl-K by default. Unset to disable.
@@ -13,6 +13,8 @@ then
 else
   typeset -ag EMOJI_FZF_FUZZY_FINDER_ARGS
 fi
+# Color to display the aliases
+typeset -g EMOJI_FZF_ALIAS_COLOR="${EMOJI_FZF_ALIAS_COLOR}"
 # Path to an optional custom alias JSON file
 typeset -g EMOJI_FZF_CUSTOM_ALIASES="${EMOJI_FZF_CUSTOM_ALIASES}"
 # Set to non-empty value to prepend the emoji before the emoji aliases
@@ -39,8 +41,12 @@ __emoji-fzf-preview() {
   setopt pipefail
 
   local -a efzf_args
+  local -a filter=(tee)  # do not filter by default
+  local -a filter2=(tee)  # do not filter by default
   local -a fz_args=("$EMOJI_FZF_FUZZY_FINDER_ARGS[@]")
   local -a fz_cmd
+  local -a selector=(awk '{ print $1 }')
+  local -a selector2=(tee)
   local is_fzf
 
   read -rA fz_cmd <<< "$EMOJI_FZF_FUZZY_FINDER"
@@ -67,7 +73,7 @@ __emoji-fzf-preview() {
       # Update default header when not all emojis are shown
       if [[ -n "$EMOJI_FZF_SKIP_MULTICHAR" ]]
       then
-        fz_args[2]="$fz_args[2] [*single char emoji only*]"
+        fz_args[2]="$fz_args[2] single char emoji only"
       fi
     fi
 
@@ -84,22 +90,34 @@ __emoji-fzf-preview() {
 
     if [[ -n "$EMOJI_FZF_SKIP_MULTICHAR" ]]
     then
-      "$EMOJI_FZF_BIN_PATH" "$efzf_args[@]" | \
-        awk 'length($1)<2' | \
-        "$fz_cmd[@]" $fz_args | \
-        awk '{ print $1 }'
-    else
-      "$EMOJI_FZF_BIN_PATH" "$efzf_args[@]" | \
-        "$fz_cmd[@]" $fz_args | \
-        awk '{ print $1 }'
+      filter=(awk 'length($1)<2')
     fi
   else
-    "$EMOJI_FZF_BIN_PATH" "$efzf_args[@]" | \
-      "$fz_cmd[@]" $fz_args \
-        --preview "${EMOJI_FZF_BIN_PATH} get --name {1}" | \
-      cut -d \" \" -f 1 | \
-      "${EMOJI_FZF_BIN_PATH}" get
+    fz_args+=(--preview "${EMOJI_FZF_BIN_PATH} get --name {1}")
+    selector2=(${EMOJI_FZF_BIN_PATH} get)
   fi
+
+  if [[ "$EMOJI_FZF_ALIAS_COLOR" ]]
+  then
+    local col=$(tput setaf "$EMOJI_FZF_ALIAS_COLOR")
+    local colreset=$(tput sgr0)
+    filter2=(sed -r "s/(.) (.+)/${col}\1 \2${colreset}/")
+  fi
+
+  # DEBUG
+  # local logfile=${TMPDIR:-/tmp}/emoji.log
+  # {
+  #   touch $logfile
+  #   echo $EMOJI_FZF_BIN_PATH $efzf_args[@]
+  #   typeset filter
+  #   typeset filter2
+  #   typeset fz_cmd
+  #   typeset selector
+  #   typeset selector2
+  # } >> $logfile
+
+  $EMOJI_FZF_BIN_PATH $efzf_args[@] | $filter[@] | $filter2[@] | \
+    $fz_cmd[@] $fz_args[@] | $selector[@] | $selector2[@]
 }
 
 emoji-fzf-zle() {

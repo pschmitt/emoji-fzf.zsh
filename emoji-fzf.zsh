@@ -92,7 +92,7 @@ __emoji-fzf-preview() {
 
     if [[ -n "$EMOJI_FZF_SKIP_MULTICHAR" ]]
     then
-      filter=(awk 'length($1)<2')
+      efzf_args+=(--skip-multichar)
     fi
   else
     fz_args+=(--preview "${EMOJI_FZF_BIN_PATH} get --name {1}")

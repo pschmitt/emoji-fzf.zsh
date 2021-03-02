@@ -29,9 +29,11 @@ typeset -g EMOJI_FZF_CLIPBOARD="${EMOJI_FZF_CLIPBOARD}"
 
 if (( ! $+commands[emoji-fzf] )) && [[ ! -x ${EMOJI_FZF_BIN_PATH%% *} ]]
 then
-  echo "emoji-fzf is not installed. You can fix that by issuing:" >&2
-  echo "pipx install emoji-fzf" >&2
-  echo "or: pip install -U --user emoji-fzf" >&2
+  {
+    echo "emoji-fzf is not installed. You can fix that by issuing:"
+    echo "pipx install emoji-fzf"
+    echo "or: pip install -U --user emoji-fzf"
+  } >&2
   return 1
 fi
 

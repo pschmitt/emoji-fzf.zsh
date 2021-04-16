@@ -42,6 +42,18 @@ __emoji-fzf-preview() {
   setopt errreturn
   setopt pipefail
 
+  local show_all
+
+  zparseopts -D -E \
+    a=show_all -all=show_all -show-all=show_all
+
+  if [[ -n "$show_all" ]]
+  then
+    # If invoked with -a|--all: Show *all* emojis, regardless of the current
+    # value of EMOJI_FZF_SKIP_MULTICHAR
+    local EMOJI_FZF_SKIP_MULTICHAR
+  fi
+
   local -a efzf_args
   local -a filter=(tee)  # do not filter by default
   local -a filter2=(tee)  # do not filter by default

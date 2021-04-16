@@ -181,7 +181,7 @@ __emoji_fzf_clipboard_cmd() {
     # Try to guess the clipboard manager
     if (( $+commands[xsel] ))
     then
-      clipboard_cmd=(xsel -b)
+      clipboard_cmd=(xsel -b -i)
     elif (( $+commands[xclip] ))
     then
       clipboard_cmd=(xclip -selection clipboard -i)

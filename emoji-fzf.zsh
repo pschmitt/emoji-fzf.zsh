@@ -107,7 +107,7 @@ __emoji-fzf-preview() {
       efzf_args+=(--skip-multichar)
     fi
   else
-    fz_args+=(--preview "${EMOJI_FZF_BIN_PATH} get --name {1}")
+    fz_args+=(-d' ' --preview "${EMOJI_FZF_BIN_PATH} get --name {1}")
     selector2=(${EMOJI_FZF_BIN_PATH} get)
   fi
 
@@ -227,7 +227,7 @@ __emoji_fzf_alias_emojilucky() {
 
   local e
   e=$(emoji-fzf preview --prepend | \
-      fzf --filter "$*" | awk '{ print $1; exit }')
+      fzf -d' ' --filter "$*" | awk '{ print $1; exit }')
 
   local clipboard_cmd=($(__emoji_fzf_clipboard_cmd))
   if [[ -n "$e" ]]

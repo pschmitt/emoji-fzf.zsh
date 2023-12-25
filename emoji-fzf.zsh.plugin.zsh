@@ -1,0 +1,1 @@
+emoji-fzf.plugin.zsh
